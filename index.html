@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WiFi Login Portal</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        width: 400px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .header {
+        padding: 30px;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #eee;
+        position: relative;
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+      }
+
+      .wifi-icon {
+        position: relative;
+        width: 50px;
+        height: 50px;
+      }
+
+      .wifi-circle {
+        position: absolute;
+        border: 3px solid #6e8efb;
+        border-radius: 50%;
+        opacity: 0;
+        animation: pulse 2s infinite;
+      }
+
+      .wifi-circle:nth-child(1) {
+        width: 20px;
+        height: 20px;
+        top: 15px;
+        left: 15px;
+      }
+
+      .wifi-circle:nth-child(2) {
+        width: 30px;
+        height: 30px;
+        top: 10px;
+        left: 10px;
+        animation-delay: 0.4s;
+      }
+
+      .wifi-circle:nth-child(3) {
+        width: 40px;
+        height: 40px;
+        top: 5px;
+        left: 5px;
+        animation-delay: 0.8s;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0;
+        }
+      }
+
+      .title {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+
+      .subtitle {
+        color: #888;
+        font-size: 14px;
+      }
+
+      .form {
+        padding: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus {
+        border-color: #6e8efb;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.3);
+      }
+
+      .form-group .icon {
+        position: absolute;
+        right: 15px;
+        top: 40px;
+        color: #aaa;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 40px;
+        color: #888;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 16px;
+      }
+
+      .password-strength {
+        height: 5px;
+        margin-top: 8px;
+        border-radius: 3px;
+        background-color: #eee;
+        position: relative;
+        overflow: hidden;
+        display: none;
+      }
+
+      .password-strength-meter {
+        height: 100%;
+        width: 0;
+        transition: width 0.3s ease;
+      }
+
+      .connect-btn {
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .connect-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+      }
+
+      .connect-btn:active {
+        transform: translateY(0);
+      }
+
+      .loading {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .remember-me {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .remember-me input {
+        margin-right: 8px;
+      }
+
+      .footer {
+        padding: 15px 30px;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+        background-color: #f8f9fa;
+      }
+
+      .success-message {
+        display: none;
+        text-align: center;
+        padding: 30px;
+        color: #28a745;
+      }
+
+      .success-icon {
+        font-size: 50px;
+        margin-bottom: 10px;
+      }
+
+      /* Clock Styles */
+      .clock-container {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .digital-clock {
+        font-size: 16px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .date-display {
+        font-size: 12px;
+        color: #888;
+      }
+
+      /* Music Player Styles */
+      /* .music-player {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 30px;
+        padding: 5px 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      } */
+
+      .music-controls {
+        display: flex;
+        align-items: center;
+      }
+
+      .play-pause-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6e8efb, #a777e3);
+        color: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-right: 8px;
+        font-size: 12px;
+      }
+
+      .music-info {
+        font-size: 12px;
+        color: #555;
+      }
+
+      .music-title {
+        font-weight: bold;
+        margin-bottom: 2px;
+      }
+
+      .volume-control {
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+      }
+
+      .volume-slider {
+        width: 60px;
+        height: 5px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #ddd;
+        border-radius: 2px;
+        outline: none;
+      }
+
+      .volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #6e8efb;
+        cursor: pointer;
+      }
+
+      .volume-slider::-moz-range-thumb {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #6e8efb;
+        cursor: pointer;
+      }
+
+      .location-display {
+        color: white;
+        font-size: 14px;
+        margin-bottom: 10px;
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 5px 15px;
+        border-radius: 20px;
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          width: 90%;
+          border-radius: 15px;
+        }
+
+        .clock-container {
+          position: relative;
+          top: 0;
+          right: 0;
+          margin-top: 10px;
+          align-items: center;
+        }
+
+        .music-player {
+          position: relative;
+          bottom: 0;
+          right: 0;
+          margin-top: 20px;
+          width: 90%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="location-display" id="locationDisplay">
+      <i>📍 Detecting location...</i>
+    </div>
+
+    <div class="container" id="loginContainer">
+      <div class="header">
+        <div class="clock-container">
+          <div class="digital-clock" id="digitalClock">00:00:00</div>
+          <div class="date-display" id="dateDisplay">-- --- ----</div>
+        </div>
+        <div class="logo">
+          <div class="wifi-icon">
+            <div class="wifi-circle"></div>
+            <div class="wifi-circle"></div>
+            <div class="wifi-circle"></div>
+          </div>
+        </div>
+        <h1 class="title">WiFi Login</h1>
+        <p class="subtitle">Connect to our secure network</p>
+      </div>
+      <div class="form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Enter your username"
+            autocomplete="username"
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+          <button type="button" class="password-toggle" id="passwordToggle">
+            👁️
+          </button>
+          <div class="password-strength" id="passwordStrength">
+            <div class="password-strength-meter" id="passwordMeter"></div>
+          </div>
+        </div>
+        <div class="remember-me">
+          <input type="checkbox" id="remember" />
+          <label for="remember">Remember me</label>
+        </div>
+        <button class="connect-btn" id="connectBtn">
+          <div class="loading" id="loading"></div>
+          <span>Connect</span>
+        </button>
+      </div>
+      <div class="success-message" id="successMessage">
+        <div class="success-icon">✓</div>
+        <h2>Connected Successfully!</h2>
+        <p>You are now connected to the WiFi network.</p>
+      </div>
+      <div class="footer">
+        <p>By connecting, you agree to our Terms of Service</p>
+      </div>
+
+      <div class="music-player">
+        <div class="music-controls">
+          <button class="play-pause-btn" id="playPauseBtn">▶</button>
+        </div>
+        <div class="music-info">
+          <div class="music-title" id="musicTitle">Relaxing Ambient</div>
+          <div class="music-artist" id="musicArtist">WiFi Login Music</div>
+        </div>
+        <div class="volume-control">
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value="0.5"
+            class="volume-slider"
+            id="volumeSlider"
+          />
+        </div>
+      </div>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+      <source src="/api/placeholder/400/320" type="audio/mp3" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get elements
+        const passwordInput = document.getElementById("password");
+        const passwordToggle = document.getElementById("passwordToggle");
+        const passwordStrength = document.getElementById("passwordStrength");
+        const passwordMeter = document.getElementById("passwordMeter");
+        const connectBtn = document.getElementById("connectBtn");
+        const loading = document.getElementById("loading");
+        const loginContainer = document.getElementById("loginContainer");
+        const successMessage = document.getElementById("successMessage");
+        const usernameInput = document.getElementById("username");
+        const digitalClock = document.getElementById("digitalClock");
+        const dateDisplay = document.getElementById("dateDisplay");
+        const locationDisplay = document.getElementById("locationDisplay");
+        const playPauseBtn = document.getElementById("playPauseBtn");
+        const volumeSlider = document.getElementById("volumeSlider");
+        const backgroundMusic = document.getElementById("backgroundMusic");
+        const musicTitle = document.getElementById("musicTitle");
+
+        // Clock functionality
+        function updateClock() {
+          const now = new Date();
+
+          // Update time
+          let hours = now.getHours();
+          const minutes = String(now.getMinutes()).padStart(2, "0");
+          const seconds = String(now.getSeconds()).padStart(2, "0");
+          const ampm = hours >= 12 ? "PM" : "AM";
+
+          hours = hours % 12;
+          hours = hours ? hours : 12; // Convert 0 to 12
+          const timeStr = `${hours}:${minutes}:${seconds} ${ampm}`;
+          digitalClock.textContent = timeStr;
+
+          // Update date
+          const days = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ];
+          const months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+
+          const day = days[now.getDay()];
+          const date = now.getDate();
+          const month = months[now.getMonth()];
+          const year = now.getFullYear();
+
+          const dateStr = `${day}, ${month} ${date}, ${year}`;
+          dateDisplay.textContent = dateStr;
+
+          // Set appropriate music based on time
+          let timeOfDay;
+          const currentHour = now.getHours();
+
+          if (currentHour >= 5 && currentHour < 12) {
+            timeOfDay = "Morning";
+            musicTitle.textContent = "Morning Serenity";
+          } else if (currentHour >= 12 && currentHour < 17) {
+            timeOfDay = "Afternoon";
+            musicTitle.textContent = "Afternoon Jazz";
+          } else if (currentHour >= 17 && currentHour < 21) {
+            timeOfDay = "Evening";
+            musicTitle.textContent = "Evening Lounge";
+          } else {
+            timeOfDay = "Night";
+            musicTitle.textContent = "Night Ambient";
+          }
+
+          // Adjust page style based on time of day
+          let gradientColors;
+          switch (timeOfDay) {
+            case "Morning":
+              gradientColors = "linear-gradient(135deg, #ff9966, #ff5e62)";
+              break;
+            case "Afternoon":
+              gradientColors = "linear-gradient(135deg, #6e8efb, #a777e3)";
+              break;
+            case "Evening":
+              gradientColors = "linear-gradient(135deg, #38ef7d, #11998e)";
+              break;
+            case "Night":
+              gradientColors = "linear-gradient(135deg, #141e30, #243b55)";
+              break;
+          }
+          document.body.style.background = gradientColors;
+        }
+
+        // Update clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Try to get user's location
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              // Using coordinates to get location name (simulated)
+              const lat = position.coords.latitude;
+              const long = position.coords.longitude;
+
+              // In a real implementation, you would use reverse geocoding API here
+              // For demo purposes, we'll simulate a response
+              locationDisplay.innerHTML = `📍 Your Location`;
+
+              // Simulating a geocoding service
+              setTimeout(() => {
+                locationDisplay.innerHTML = `📍 Your Location (${lat.toFixed(
+                  2
+                )}, ${long.toFixed(2)})`;
+              }, 1000);
+            },
+            function (error) {
+              locationDisplay.innerHTML = `📍 Location: Unknown`;
+            }
+          );
+        } else {
+          locationDisplay.innerHTML = `📍 Geolocation not supported`;
+        }
+
+        // Music player functionality
+        let isPlaying = false;
+
+        playPauseBtn.addEventListener("click", function () {
+          if (isPlaying) {
+            backgroundMusic.pause();
+            playPauseBtn.textContent = "▶";
+          } else {
+            backgroundMusic.play().catch((e) => {
+              console.log("Audio playback prevented: ", e);
+              // This is expected in many browsers that prevent autoplay
+            });
+            playPauseBtn.textContent = "⏸";
+          }
+          isPlaying = !isPlaying;
+        });
+
+        volumeSlider.addEventListener("input", function () {
+          backgroundMusic.volume = this.value;
+        });
+
+        // Toggle password visibility
+        passwordToggle.addEventListener("click", function () {
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            passwordToggle.textContent = "🔒";
+          } else {
+            passwordInput.type = "password";
+            passwordToggle.textContent = "👁️";
+          }
+        });
+
+        // Show password strength when typing
+        passwordInput.addEventListener("focus", function () {
+          passwordStrength.style.display = "block";
+        });
+
+        // Check password strength
+        passwordInput.addEventListener("input", function () {
+          const password = passwordInput.value;
+          let strength = 0;
+
+          if (password.length > 5) strength += 20;
+          if (password.length > 8) strength += 20;
+          if (password.match(/[A-Z]/)) strength += 20;
+          if (password.match(/[0-9]/)) strength += 20;
+          if (password.match(/[^A-Za-z0-9]/)) strength += 20;
+
+          passwordMeter.style.width = strength + "%";
+
+          // Change color based on strength
+          if (strength < 40) {
+            passwordMeter.style.backgroundColor = "#dc3545";
+          } else if (strength < 80) {
+            passwordMeter.style.backgroundColor = "#ffc107";
+          } else {
+            passwordMeter.style.backgroundColor = "#28a745";
+          }
+        });
+
+        // Handle form submission
+        connectBtn.addEventListener("click", function () {
+          // Check if inputs are not empty
+          if (!usernameInput.value || !passwordInput.value) {
+            // Shake the form to indicate error
+            loginContainer.classList.add("shake");
+            setTimeout(() => {
+              loginContainer.classList.remove("shake");
+            }, 500);
+
+            // Change border color to indicate error
+            if (!usernameInput.value) {
+              usernameInput.style.borderColor = "#dc3545";
+            }
+            if (!passwordInput.value) {
+              passwordInput.style.borderColor = "#dc3545";
+            }
+
+            return;
+          }
+
+          // Show loading animation
+          loading.style.display = "block";
+          connectBtn.disabled = true;
+
+          // Simulate connection
+          setTimeout(function () {
+            // Hide the form
+            document.querySelector(".form").style.display = "none";
+
+            // Show success message
+            successMessage.style.display = "block";
+
+            // Hide loading
+            loading.style.display = "none";
+          }, 2000);
+        });
+
+        // Reset border color when typing
+        usernameInput.addEventListener("input", function () {
+          usernameInput.style.borderColor = "#ddd";
+        });
+
+        passwordInput.addEventListener("input", function () {
+          passwordInput.style.borderColor = "#ddd";
+        });
+
+        // Add shake animation
+        const style = document.createElement("style");
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .shake {
+                animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            }`;
+        document.head.appendChild(style);
+      });
+    </script>
+  </body>
+</html>
